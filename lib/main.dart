@@ -15,23 +15,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
         textTheme: GoogleFonts.russoOneTextTheme(),
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
@@ -42,15 +28,6 @@ class MyApp extends StatelessWidget {
 
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
 
   @override
   State<GamePage> createState() => _GamePageState();
@@ -69,67 +46,66 @@ class _GamePageState extends State<GamePage> {
   int firstIndex = 0;
   int secontIndex = 0,target = 0;
   int diceSum =0;
-  bool hasTrget = false;
+  bool hasTrget = false,shouldShowBoard = false;
   final random = Random.secure();
-  int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+
     return Scaffold(
       appBar: AppBar(
         title:  Text('Luck Checker'),
       ),
       body:  Center(
 
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'My Dice Game',
-              style: TextStyle(fontSize: 50),
-            ),
-            Row(
-              //mainAxisSize: MainAxisSize.min,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Image.asset(diceList[firstIndex],height: 80,width: 80,),
-                const SizedBox(width:10,),
-                Image.asset(diceList[secontIndex],height: 80,width: 80,),
-
-              ],
-            ),
-            Text('Dice Sum = $diceSum'),
-            if(hasTrget)
-              Text('your Target  $target\n keep Rolling to match the $target'),
-            Text(result,style: TextStyle(fontSize: 50),),
-            ElevatedButton(
-                onPressed: rollTheDice,
-                child: Text('Roll the dice'),),
-            SizedBox(height: 10),
-            ElevatedButton(
-                onPressed: reSet,
-                child: Text('Reset'),),
-
-
-          ],
-        ),
+        child: shouldShowBoard
+            ? Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  const Text(
+                    'My Dice Game',
+                    style: TextStyle(fontSize: 50),
+                  ),
+                  Row(
+                    //mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        diceList[firstIndex],
+                        height: 80,
+                        width: 80,
+                      ),
+                      const SizedBox(
+                        width: 10,
+                      ),
+                      Image.asset(
+                        diceList[secontIndex],
+                        height: 80,
+                        width: 80,
+                      ),
+                    ],
+                  ),
+                  Text('Dice Sum = $diceSum'),
+                  if (hasTrget)
+                    Text(
+                        'your Target  $target\n keep Rolling to match the $target'),
+                  Text(
+                    result,
+                    style: TextStyle(fontSize: 50),
+                  ),
+                  ElevatedButton(
+                    onPressed: rollTheDice,
+                    child: Text('Roll the dice'),
+                  ),
+                  SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: reSet,
+                    child: Text('Reset'),
+                  ),
+                ],
+              )
+            : startPage(onStart: startGame,),
       ),
       // This trailing comma makes auto-formatting nicer for build methods.
     );
@@ -177,6 +153,96 @@ class _GamePageState extends State<GamePage> {
       hasTrget =false;
       diceSum =0;
       result ='';
+      shouldShowBoard = false;
+    });
+  }
+
+  void startGame() {
+    setState(() {
+      shouldShowBoard =true;
     });
   }
 }
+
+class startPage extends StatelessWidget {
+  final VoidCallback onStart;
+  const startPage({super.key,required this.onStart});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Image.asset('images/dicelogo.jpg',width: 150,height: 150,),
+        RichText(
+          text: TextSpan(
+            text: 'MEGA',style: GoogleFonts.russoOne().copyWith(
+            color: Colors.red,
+            fontSize: 40,
+          ),children: [
+            TextSpan(
+              text: 'Roll',
+              style: GoogleFonts.russoOne().copyWith(
+                color: Colors.black12,
+                fontSize: 45,
+              ),
+            ),TextSpan(
+              text: 'Event',
+              style: GoogleFonts.russoOne().copyWith(
+                color: Colors.blue,
+                fontSize: 42,
+              ),
+            ),
+          ]
+          )
+        ),
+        Spacer(),
+        diceButton(lable: 'START', onPressed: onStart),
+        diceButton(lable: 'How To Play', onPressed: (){
+          showInstaction(context);
+
+        }),
+      ],
+    );
+  }
+
+  void showInstaction(BuildContext context) {
+    showDialog(context: context, builder: (context)=>AlertDialog(
+      title: Text('Instraction'),
+      content: Text(gameRules),
+      actions: [
+        TextButton(onPressed: ()=> Navigator.pop(context), child: Text('Close'),)
+      ],
+    ));
+  }
+}
+
+class diceButton extends StatelessWidget {
+  final String lable ;
+  final VoidCallback onPressed;
+
+  const diceButton({super.key,required this.lable,required this.onPressed});
+
+  @override
+  Widget build(BuildContext context) {
+    return  Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: SizedBox(
+        width: 200,
+        height: 60,
+        child: ElevatedButton(
+            onPressed: onPressed,
+            child: Text(lable,style: TextStyle(fontSize: 20,color: Colors.white),),
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.green,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+
+const gameRules ='''
+* AT FIRST ROLL,IF THE DICE SUM IS 7 OR 11 ,YOU WIN!!!
+''';
