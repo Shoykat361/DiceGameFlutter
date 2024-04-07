@@ -122,6 +122,10 @@ class _GamePageState extends State<GamePage> {
             ElevatedButton(
                 onPressed: rollTheDice,
                 child: Text('Roll the dice'),),
+            SizedBox(height: 10),
+            ElevatedButton(
+                onPressed: reSet,
+                child: Text('Reset'),),
 
 
           ],
@@ -136,14 +140,43 @@ class _GamePageState extends State<GamePage> {
       firstIndex = random.nextInt(6);
       secontIndex = random.nextInt(6);
       diceSum =firstIndex+secontIndex+2;
-      if(diceSum == 7 || diceSum == 11){
-        result = 'You Win the Game !!!';
-      }else if (diceSum == 2 || diceSum ==3 || diceSum ==12){
-        result = 'You Lost The Game !!!';
+      if(hasTrget){
+        checkTarget();
+
       }else{
-        hasTrget = true;
-        target =diceSum;
+        checkFirstRoll();
       }
+
+    });
+  }
+
+  void checkTarget() {
+    if(diceSum == target){
+      result ='You Win !!!';
+    }else if(diceSum == 7 ){
+      result = 'You lost!!!';
+    }
+  }
+
+  void checkFirstRoll() {
+    if(diceSum == 7 || diceSum == 11){
+      result = 'You Win the Game !!!';
+    }else if (diceSum == 2 || diceSum ==3 || diceSum ==12){
+      result = 'You Lost The Game !!!';
+    }else{
+      hasTrget = true;
+      target =diceSum;
+    }
+  }
+
+  void reSet() {
+    setState(() {
+      firstIndex =0;
+      secontIndex =0;
+      target = 0;
+      hasTrget =false;
+      diceSum =0;
+      result ='';
     });
   }
 }
