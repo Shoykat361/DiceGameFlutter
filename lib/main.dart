@@ -26,6 +26,13 @@ class MyApp extends StatelessWidget {
   }
 }
 
+enum GameStatus{
+  running,
+  over,
+  none
+
+}
+
 class GamePage extends StatefulWidget {
   const GamePage({super.key});
 
@@ -34,6 +41,9 @@ class GamePage extends StatefulWidget {
 }
 
 class _GamePageState extends State<GamePage> {
+  GameStatus gameStatus = GameStatus.none;
+  static const win = 'You Win !!!';
+  static const lost = 'You Lost !!!';
   String result = '';
   final diceList = [
     'images/dice1.jpg',
@@ -90,18 +100,21 @@ class _GamePageState extends State<GamePage> {
                   if (hasTrget)
                     Text(
                         'your Target  $target\n keep Rolling to match the $target'),
-                  Text(
+                  if(gameStatus == GameStatus.over)
+                    Text(
                     result,
                     style: TextStyle(fontSize: 50),
                   ),
-                  ElevatedButton(
+                  if(gameStatus  ==GameStatus.running)
+                    diceButton(
                     onPressed: rollTheDice,
-                    child: Text('Roll the dice'),
+                    lable: 'Roll the dice',
                   ),
-                  SizedBox(height: 10),
-                  ElevatedButton(
+                  const SizedBox(height: 10),
+                  if(gameStatus == GameStatus.over)
+                    diceButton(
                     onPressed: reSet,
-                    child: Text('Reset'),
+                    lable: 'Reset',
                   ),
                 ],
               )
@@ -128,17 +141,21 @@ class _GamePageState extends State<GamePage> {
 
   void checkTarget() {
     if(diceSum == target){
-      result ='You Win !!!';
+      result = win;
+      gameStatus =GameStatus.over;
     }else if(diceSum == 7 ){
-      result = 'You lost!!!';
+      result = lost;
+      gameStatus =GameStatus.over;
     }
   }
 
   void checkFirstRoll() {
     if(diceSum == 7 || diceSum == 11){
-      result = 'You Win the Game !!!';
+      result = win;
+      gameStatus =GameStatus.over;
     }else if (diceSum == 2 || diceSum ==3 || diceSum ==12){
-      result = 'You Lost The Game !!!';
+      result = lost;
+      gameStatus =GameStatus.over;
     }else{
       hasTrget = true;
       target =diceSum;
@@ -154,12 +171,14 @@ class _GamePageState extends State<GamePage> {
       diceSum =0;
       result ='';
       shouldShowBoard = false;
+      gameStatus = GameStatus.none;
     });
   }
 
   void startGame() {
     setState(() {
       shouldShowBoard =true;
+      gameStatus = GameStatus.running;
     });
   }
 }
@@ -246,3 +265,4 @@ class diceButton extends StatelessWidget {
 const gameRules ='''
 * AT FIRST ROLL,IF THE DICE SUM IS 7 OR 11 ,YOU WIN!!!
 ''';
+
