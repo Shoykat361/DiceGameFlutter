@@ -2,6 +2,10 @@
 
 A new Flutter project.
 
+# A Flutter Dice Game
+This is a simple dice game in Flutter. I have added it with winning, loosing and other Reset Game.
+App launches, player  can start the dice rolling first then Game will playing.
+
 ## Getting Started
 
 This project is a starting point for a Flutter application.
