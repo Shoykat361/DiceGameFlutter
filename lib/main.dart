@@ -106,9 +106,9 @@ class _GamePageState extends State<GamePage> {
                     style: TextStyle(fontSize: 50),
                   ),
                   if(gameStatus  ==GameStatus.running)
-                    diceButton(
+                    ShakingButton(
+                        label: 'ROLL',
                     onPressed: rollTheDice,
-                    lable: 'Roll the dice',
                   ),
                   const SizedBox(height: 10),
                   if(gameStatus == GameStatus.over)
@@ -218,7 +218,6 @@ class startPage extends StatelessWidget {
         diceButton(lable: 'START', onPressed: onStart),
         diceButton(lable: 'How To Play', onPressed: (){
           showInstaction(context);
-
         }),
       ],
     );
@@ -253,6 +252,80 @@ class diceButton extends StatelessWidget {
             child: Text(lable,style: TextStyle(fontSize: 20,color: Colors.white),),
           style: ElevatedButton.styleFrom(
             backgroundColor: Colors.green,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class ShakingButton extends StatefulWidget {
+  final String label;
+  final VoidCallback onPressed;
+
+  const ShakingButton({Key? key, required this.label, required this.onPressed}) : super(key: key);
+
+  @override
+  _ShakingButtonState createState() => _ShakingButtonState();
+}
+
+class _ShakingButtonState extends State<ShakingButton> with SingleTickerProviderStateMixin {
+  late AnimationController _animationController;
+  late Animation<double> _animation;
+
+  @override
+  void initState() {
+    super.initState();
+    _animationController = AnimationController(
+      vsync: this,
+      duration: Duration(milliseconds: 500),
+    );
+    _animation = Tween<double>(begin: -5, end: 5).animate(
+      CurvedAnimation(
+        parent: _animationController,
+        curve: Curves.easeInOut,
+      ),
+    )..addStatusListener((status) {
+      if (status == AnimationStatus.completed) {
+        _animationController.reverse();
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AnimatedBuilder(
+      animation: _animationController,
+      builder: (context, child) {
+        return Transform.translate(
+          offset: Offset(_animation.value, 0),
+          child: child,
+        );
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SizedBox(
+          width: 200,
+          height: 60,
+          child: ElevatedButton(
+            onPressed: () {
+              _animationController.forward();
+              widget.onPressed();
+            },
+            child: Text(
+              widget.label,
+              style: TextStyle(fontSize: 20, color: Colors.white),
+            ),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+            ),
           ),
         ),
       ),
